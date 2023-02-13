@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List
+
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 import pickle
 import pandas as pd
@@ -51,4 +54,10 @@ def query(feats : Data):
         'response': [int(x) for x in model.predict([features])]
     }
     return response
+
+templates = Jinja2Templates(directory='templates')
     
+@app.get("/predict/", response_class=HTMLResponse)
+async def predict(request: Request):
+    return templates.TemplateResponse('predict.html', {'request': request})
+
